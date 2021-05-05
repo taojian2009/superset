@@ -265,6 +265,15 @@ class CsvToDatabaseView(SimpleFormView):
         )
         flash(message, "info")
         stats_logger.incr("successful_csv_upload")
+        # bind user role for datasource access on this table.
+        from superset import appbuilder
+        sm = appbuilder.sm
+        role = sm.add_role(g.user.username)
+        perm_view = sm.find_permission_view_menu("datasource_access", sqla_table.perm)
+        sm.add_permission_role(role, perm_view)
+        user = sm.find_user(g.user.username)
+        user.roles.append(role)
+        db.session.commit()
         return redirect("/tablemodelview/list/")
 
 
