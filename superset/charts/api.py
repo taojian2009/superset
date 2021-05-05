@@ -278,7 +278,7 @@ class ChartRestApi(BaseSupersetModelRestApi):
             )
             return self.response_422(message=str(ex))
 
-    @expose("/<pk>", methods=["PUT"])
+    @expose("/<pk>", methods=["PUT", "GET"])
     @protect()
     @safe
     @statsd_metrics

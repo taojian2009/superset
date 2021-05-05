@@ -35,6 +35,7 @@ from superset.views.base import (
 )
 from superset.views.chart.mixin import SliceMixin
 from superset.views.utils import bootstrap_user_data
+from superset.views.chart.filters import SliceFilter
 
 
 class SliceModelView(
@@ -49,6 +50,7 @@ class SliceModelView(
     }
     class_permission_name = "Chart"
     method_permission_name = MODEL_VIEW_RW_METHOD_PERMISSION_MAP
+    base_filters = [["id", SliceFilter, lambda: []]]
 
     def pre_add(self, item: "SliceModelView") -> None:
         utils.validate_json(item.params)
@@ -65,7 +67,7 @@ class SliceModelView(
     def add(self) -> FlaskResponse:
         datasources = [
             {"value": str(d.id) + "__" + d.type, "label": repr(d)}
-            for d in ConnectorRegistry.get_all_datasources(db.session)
+            for d in ConnectorRegistry.get_datasources_by_user(db.session, g.user.id)
         ]
         payload = {
             "datasources": sorted(datasources, key=lambda d: d["label"]),
@@ -81,7 +83,6 @@ class SliceModelView(
     def list(self) -> FlaskResponse:
         if not is_feature_enabled("ENABLE_REACT_CRUD_VIEWS"):
             return super().list()
-
         return super().render_app_template()
 
 

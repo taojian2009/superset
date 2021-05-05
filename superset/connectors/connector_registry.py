@@ -74,6 +74,18 @@ class ConnectorRegistry:
         return datasources
 
     @classmethod
+    def get_datasources_by_user(cls,session: Session, user_id: int) -> List["BaseDatasource"]:
+        datasources: List["BaseDatasource"] = []
+        for source_type in ConnectorRegistry.sources:
+            print(source_type, "source_type----------")
+            source_class = ConnectorRegistry.sources[source_type]
+            qry = session.query(source_class)
+            qry = source_class.default_query(qry)
+            qry = qry.filter_by(created_by_fk=user_id)
+            datasources.extend(qry.all())
+        return datasources
+
+    @classmethod
     def get_datasource_by_name(  # pylint: disable=too-many-arguments
         cls,
         session: Session,
