@@ -505,10 +505,10 @@ def check_ownership(obj: Any, raise_if_false: bool = True) -> bool:
 
     # Making a list of owners that works across ORM models
     owners: List[User] = []
-    if hasattr(orig_obj, "owners"):
-        owners += orig_obj.owners
-    if hasattr(orig_obj, "owner"):
-        owners += [orig_obj.owner]
+    # if hasattr(orig_obj, "owners"):
+    #     owners += orig_obj.owners
+    # if hasattr(orig_obj, "owner"):
+    #     owners += [orig_obj.owner]
     if hasattr(orig_obj, "created_by"):
         owners += [orig_obj.created_by]
 

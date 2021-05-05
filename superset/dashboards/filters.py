@@ -73,29 +73,7 @@ class DashboardFilter(BaseFilter):  # pylint: disable=too-few-public-methods
         if "admin" in user_roles:
             return query
 
-        datasource_perms = security_manager.user_view_menu_names("datasource_access")
-        schema_perms = security_manager.user_view_menu_names("schema_access")
-        published_dash_query = (
-            db.session.query(Dashboard.id)
-            .join(Dashboard.slices)
-            .filter(
-                and_(
-                    Dashboard.published == True,  # pylint: disable=singleton-comparison
-                    or_(
-                        Slice.perm.in_(datasource_perms),
-                        Slice.schema_perm.in_(schema_perms),
-                        security_manager.can_access_all_datasources(),
-                    ),
-                )
-            )
-        )
-
-        users_favorite_dash_query = db.session.query(FavStar.obj_id).filter(
-            and_(
-                FavStar.user_id == security_manager.user_model.get_user_id(),
-                FavStar.class_name == "Dashboard",
-            )
-        )
+        # only owners can see it
         owner_ids_query = (
             db.session.query(Dashboard.id)
             .join(Dashboard.owners)
@@ -104,12 +82,9 @@ class DashboardFilter(BaseFilter):  # pylint: disable=too-few-public-methods
                 == security_manager.user_model.get_user_id()
             )
         )
-
         query = query.filter(
             or_(
                 Dashboard.id.in_(owner_ids_query),
-                Dashboard.id.in_(published_dash_query),
-                Dashboard.id.in_(users_favorite_dash_query),
             )
         )
 
