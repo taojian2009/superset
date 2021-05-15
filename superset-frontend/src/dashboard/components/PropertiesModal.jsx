@@ -37,6 +37,7 @@ import { JsonEditor } from 'src/components/AsyncAceEditor';
 import ColorSchemeControlWrapper from 'src/dashboard/components/ColorSchemeControlWrapper';
 import { getClientErrorObject } from '../../utils/getClientErrorObject';
 import withToasts from '../../messageToasts/enhancers/withToasts';
+import Checkbox from 'src/components/Checkbox';
 import '../stylesheets/buttons.less';
 
 const StyledJsonEditor = styled(JsonEditor)`
@@ -113,6 +114,7 @@ class PropertiesModal extends React.PureComponent {
         owners: [],
         json_metadata: '',
         colorScheme: props.colorScheme,
+        isPublic: false
       },
       isDashboardLoaded: false,
       isAdvancedOpen: false,
@@ -128,6 +130,10 @@ class PropertiesModal extends React.PureComponent {
   componentDidMount() {
     this.fetchDashboardDetails();
     JsonEditor.preload();
+  }
+
+  onTogglePublic = (isPublic)=>{
+    this.updateFormState('isPublic', isPublic);
   }
 
   onColorSchemeChange(value, { updateMetadata = true } = {}) {
@@ -196,6 +202,7 @@ class PropertiesModal extends React.PureComponent {
             ? jsonStringify(jsonMetadataObj)
             : '',
           colorScheme: jsonMetadataObj.color_scheme,
+          isPublic: dashboard.is_public
         },
       }));
       const initialSelectedOwners = dashboard.owners.map(owner => ({
@@ -231,6 +238,7 @@ class PropertiesModal extends React.PureComponent {
         dashboard_title: dashboardTitle,
         colorScheme,
         owners: ownersValue,
+        isPublic,
       },
     } = this.state;
     const { onlyApply } = this.props;
@@ -255,6 +263,7 @@ class PropertiesModal extends React.PureComponent {
         jsonMetadata,
         ownerIds: owners,
         colorScheme: metadataColorScheme || colorScheme,
+        isPublic
       });
       this.props.onHide();
     } else {
@@ -266,6 +275,7 @@ class PropertiesModal extends React.PureComponent {
           slug: slug || null,
           json_metadata: jsonMetadata || null,
           owners,
+          is_public:isPublic
         }),
       }).then(({ json: { result } }) => {
         this.props.addSuccessToast(t('The dashboard has been saved'));
@@ -378,6 +388,15 @@ class PropertiesModal extends React.PureComponent {
               <ColorSchemeControlWrapper
                 onChange={this.onColorSchemeChange}
                 colorScheme={values.colorScheme}
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col md={4}>
+              <h3 style={{marginTop: '1em'}}>{t('Public')}</h3>
+              <Checkbox
+                checked={values.isPublic}
+                onChange={this.onTogglePublic}
               />
             </Col>
           </Row>

@@ -473,7 +473,7 @@ class CsvResponse(Response):  # pylint: disable=too-many-ancestors
     charset = conf["CSV_EXPORT"].get("encoding", "utf-8")
 
 
-def check_ownership(obj: Any, raise_if_false: bool = True) -> bool:
+def check_ownership(obj: Any, raise_if_false: bool = True, by_created: bool = False) -> bool:
     """Meant to be used in `pre_update` hooks on models to enforce ownership
 
     Admin have all access, and other users need to be referenced on either
@@ -505,10 +505,11 @@ def check_ownership(obj: Any, raise_if_false: bool = True) -> bool:
 
     # Making a list of owners that works across ORM models
     owners: List[User] = []
-    # if hasattr(orig_obj, "owners"):
-    #     owners += orig_obj.owners
-    # if hasattr(orig_obj, "owner"):
-    #     owners += [orig_obj.owner]
+    if not by_created:
+        if hasattr(orig_obj, "owners"):
+            owners += orig_obj.owners
+        if hasattr(orig_obj, "owner"):
+            owners += [orig_obj.owner]
     if hasattr(orig_obj, "created_by"):
         owners += [orig_obj.created_by]
 

@@ -116,6 +116,7 @@ class DashboardRestApi(BaseSupersetModelRestApi):
         "slug",
         "table_names",
         "thumbnail_url",
+        "is_public"
     ]
     list_columns = [
         "id",

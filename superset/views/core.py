@@ -1806,6 +1806,11 @@ class Superset(BaseSupersetView):  # pylint: disable=too-many-public-methods
 
         data = dash.full_data()
 
+        if not check_ownership(dash, raise_if_false=False) and not dash.is_public:
+            creator = dash.created_by.get_full_name()
+            msg = "access denied, ask for grant access, dashboard owner:" + creator
+            return msg
+        
         if config["ENABLE_ACCESS_REQUEST"]:
             for datasource in data["datasources"].values():
                 datasource = ConnectorRegistry.get_datasource(

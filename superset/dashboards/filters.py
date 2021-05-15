@@ -85,6 +85,7 @@ class DashboardFilter(BaseFilter):  # pylint: disable=too-few-public-methods
         query = query.filter(
             or_(
                 Dashboard.id.in_(owner_ids_query),
+                Dashboard.is_public,
             )
         )
 

@@ -67,7 +67,7 @@ class UpdateDashboardCommand(BaseCommand):
             raise DashboardNotFoundError()
         # Check ownership
         try:
-            check_ownership(self._model)
+            check_ownership(self._model, by_created=True)
         except SupersetSecurityException:
             raise DashboardForbiddenError()
 

@@ -56,6 +56,11 @@ published_description = (
     "the list of all dashboards."
 )
 
+is_public_description = {
+    "Whether this dashboard is public to access for all users",
+    "Dashboard Public"
+}
+
 
 openapi_spec_methods_override = {
     "get": {"get": {"description": "Get a dashboard detail information."}},
@@ -168,6 +173,8 @@ class DashboardPutSchema(BaseDashboardSchema):
         validate=validate_json_metadata,
     )
     published = fields.Boolean(description=published_description, allow_none=True)
+
+    is_public = fields.Boolean(description=is_public_description, allow_none=True)
 
 
 class ChartFavStarResponseResult(Schema):
